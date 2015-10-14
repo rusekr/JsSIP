@@ -47,10 +47,16 @@ gulp.task('browserify', function() {
 		standalone: PKG.title
 	}).bundle()
 		.pipe(vinyl_source_stream(PKG.name + '.js'))
-		.pipe(header(BANNER, BANNER_OPTIONS))
 		.pipe(gulp.dest('dist/'));
 });
 
+gulp.task('banner', function() {
+	var src = 'dist/' + PKG.name + '.js';
+	return gulp.src(src)
+		.pipe(expect(EXPECT_OPTIONS, src))
+		.pipe(header(BANNER, BANNER_OPTIONS))
+		.pipe(gulp.dest('dist/'));
+});
 
 gulp.task('uglify', function() {
 	var src = 'dist/' + PKG.name + '.js';
@@ -99,5 +105,5 @@ gulp.task('grammar', function(cb) {
 
 
 gulp.task('devel', gulp.series('grammar'));
-gulp.task('dist', gulp.series('lint', 'test', 'browserify', 'uglify'));
+gulp.task('dist', gulp.series('lint', 'test', 'browserify', 'banner', 'uglify'));
 gulp.task('default', gulp.series('dist'));
